@@ -1,0 +1,54 @@
+<html>
+<head></head>
+<body>
+    <h1>Upload an image:</h1>
+    <hr>
+    <form enctype="multipart/form-data" method="POST" novalidate="">
+        {% csrf_token %}
+        {{ form.as_p }}
+    <!-- <input type="submit" /> -->
+    </form>
+
+    <button id="btn_upload">Upload (xhr)</button>
+    <hr>
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function() {
+
+            const button = document.querySelector("#btn_upload");
+
+            button.addEventListener("click", async (e) => {
+
+                let form_data = new FormData();
+                //
+                form_data.append("img", "blob33.jpg");
+
+                let xhr = new XMLHttpRequest();
+                // xhr.open("post", "http://127.0.0.1:8000/upload/", true);
+                xhr.open("POST", "{% url 'upload' %}", true);
+                // required by Django
+                xhr.setRequestHeader("HTTP_X_REQUESTED_WITH", "XMLHttpRequest");
+
+                xhr.onload = function(e) {
+                    alert("Upload completed successfully!");
+                };
+                xhr.upload.onprogress = function(e) {
+                    if (e.lengthComputable) {
+
+                        console.log("progress", e.loaded, e.total);
+                        // progressBar.value = (e.loaded / e.total) * 100;
+                        // progressBar.textContent = progressBar.value; // fallback for unsupported browsers
+                    }
+                };
+
+                console.log("Sending...");
+                xhr.send(form_data);
+
+            });
+
+        });
+
+    </script>
+</body>
+</html>
